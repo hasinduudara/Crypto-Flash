@@ -1,24 +1,43 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
-
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+    return (
+        <>
+            <StatusBar style="light" />
 
-  return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
-  );
+            <Stack
+                screenOptions={{
+                    headerStyle: {
+                        backgroundColor: "#0f172a",
+                    },
+                    headerTintColor: "#fff",
+                    headerTitleStyle: {
+                        fontWeight: "bold",
+                    },
+                }}
+            >
+                {/* HOME PAGE */}
+                <Stack.Screen
+                    name="index"
+                    options={{
+                        title: "Home",
+                    }}
+                />
+
+                {/* COIN DETAILS PAGE */}
+                <Stack.Screen
+                    name="details[id]"
+                    options={{
+                        title: "Details",
+                        headerBackButtonDisplayMode: "minimal",
+                        presentation: "card",
+                        animation: "slide_from_right",
+                        gestureEnabled: true,
+                        gestureDirection: "horizontal",
+                    }}
+                />
+            </Stack>
+        </>
+    );
 }
