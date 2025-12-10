@@ -1,9 +1,11 @@
-import { View, Text, FlatList, Image, TouchableOpacity, ActivityIndicator, StyleSheet } from "react-native";
+import { View, Text, FlatList, Image, TouchableOpacity, ActivityIndicator, StyleSheet, TextInput } from "react-native";
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 
 export default function Home() {
     const [coins, setCoins] = useState<any[]>([]);
+    const [filteredCoins, setFilteredCoins] = useState<any[]>([]); // Store filtered list
+    const [search, setSearch] = useState(""); // Store search text
     const [loading, setLoading] = useState(true);
     const router = useRouter();
 
@@ -18,6 +20,7 @@ export default function Home() {
             );
             const data = await res.json();
             setCoins(data);
+            setFilteredCoins(data); // Initialize filtered list with all data
         } catch (error) {
             console.log(error);
         } finally {
@@ -25,11 +28,29 @@ export default function Home() {
         }
     };
 
+    // Handle Search Logic
+    const handleSearch = (text: string) => {
+        setSearch(text);
+        if (text) {
+            const newData = coins.filter((item) => {
+                const itemData = item.name ? item.name.toUpperCase() : "".toUpperCase();
+                const symbolData = item.symbol ? item.symbol.toUpperCase() : "".toUpperCase();
+                const textData = text.toUpperCase();
+
+                // Search by Name OR Symbol (e.g., "Bitcoin" or "BTC")
+                return itemData.includes(textData) || symbolData.includes(textData);
+            });
+            setFilteredCoins(newData);
+        } else {
+            setFilteredCoins(coins); // Reset to full list if search is empty
+        }
+    };
+
     if (loading) {
         return (
             <View style={styles.center}>
-                <ActivityIndicator size="large" />
-                <Text>Loading Crypto Prices...</Text>
+                <ActivityIndicator size="large" color="#38bdf8" />
+                <Text style={{ color: "#fff", marginTop: 10 }}>Loading Crypto Prices...</Text>
             </View>
         );
     }
@@ -38,8 +59,17 @@ export default function Home() {
         <View style={styles.container}>
             <Text style={styles.title}>🔥 Top 10 Crypto Coins</Text>
 
+            {/* Search Input */}
+            <TextInput
+                style={styles.searchInput}
+                placeholder="Search Coin (e.g., BTC, ETH)..."
+                placeholderTextColor="#94a3b8"
+                value={search}
+                onChangeText={(text) => handleSearch(text)}
+            />
+
             <FlatList
-                data={coins}
+                data={filteredCoins} // Render the filtered list
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
                     <TouchableOpacity
@@ -80,13 +110,22 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 12,
-        backgroundColor: "#0f172a", // dark background
+        backgroundColor: "#0f172a",
     },
     title: {
         fontSize: 22,
         fontWeight: "bold",
         color: "#fff",
         marginBottom: 10,
+    },
+    searchInput: {
+        backgroundColor: "#1e293b",
+        color: "#fff",
+        padding: 12,
+        borderRadius: 8,
+        marginBottom: 15,
+        borderWidth: 1,
+        borderColor: "#334155",
     },
     card: {
         backgroundColor: "#1e293b",
@@ -121,5 +160,6 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
+        backgroundColor: "#0f172a",
     },
 });
