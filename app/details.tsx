@@ -1,4 +1,4 @@
-import { View, Text, Image, ActivityIndicator, ScrollView, StyleSheet } from "react-native";
+import { View, Text, Image, ActivityIndicator, ScrollView, StyleSheet, Linking, TouchableOpacity } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 
@@ -14,6 +14,12 @@ export default function CoinDetails() {
             .catch((err) => console.log(err))
             .finally(() => setLoading(false));
     }, []);
+
+    // Monetag Ad Link එක Open කරන Function එක
+    const openAdLink = () => {
+        const adUrl = "https://otieu.com/4/10245086";
+        Linking.openURL(adUrl).catch((err) => console.error("Error opening link", err));
+    };
 
     if (loading) {
         return (
@@ -76,6 +82,11 @@ export default function CoinDetails() {
                     24h Low: ${coin.market_data.low_24h.usd}
                 </Text>
             </View>
+
+            {/* 🔥 Monetag AD BUTTON 🔥 */}
+            <TouchableOpacity style={styles.adButton} onPress={openAdLink}>
+                <Text style={styles.adButtonText}>🎁 Click this link to get free crypto</Text>
+            </TouchableOpacity>
 
             {/* Description */}
             <View style={styles.card}>
@@ -150,4 +161,26 @@ const styles = StyleSheet.create({
         fontSize: 14,
         lineHeight: 20,
     },
+    // අලුතින් එක් කළ Button Styles
+    adButton: {
+        backgroundColor: "#FFD700", // Gold color for Crypto vibes
+        paddingVertical: 15,
+        paddingHorizontal: 10,
+        borderRadius: 12,
+        alignItems: "center",
+        marginBottom: 12,
+        borderWidth: 1,
+        borderColor: "#FFA500",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 3,
+        elevation: 5, // Android shadow
+    },
+    adButtonText: {
+        color: "#000", // Black text for readability
+        fontSize: 16,
+        fontWeight: "bold",
+        textAlign: "center",
+    }
 });
